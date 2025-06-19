@@ -1,0 +1,2 @@
+#define FRAME_WIDTH 10
+#define FRAME_HEIGHT 10

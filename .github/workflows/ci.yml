@@ -1,0 +1,59 @@
+name: Build the new code and Test with cukinia
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install gdown
+        run: pip install gdown
+
+      - name: Download toolchain archive from Google Drive
+        run: gdown https://drive.google.com/uc?id=1YFKVe8KBIDbx3eXMCm9P2pn3qBHjo9Pm -O toolchain/toolchain.tar.xz
+
+      - name: Extract toolchain
+        run: |
+          mkdir -p toolchain
+          tar -xJf toolchain/toolchain.tar.xz -C toolchain
+
+      # - name: Add toolchain to PATH
+      #   run: echo "${{ github.workspace }}/toolchain/bin" >> $GITHUB_PATH
+
+      - name: Pull Docker Image
+        run: docker pull olosrolo/rp3_linux
+
+      - name: Set up QEMU for ARMv7
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm/v7
+
+      - name: Compile code
+        run: |
+          cd apps
+          make all
+          cd ..
+
+      - name: Run ARM container
+        run: docker run -p 2222:22 --name build-test -d olosrolo/rp3_linux
+
+      - name: Copy binaries into container
+        run: docker cp apps/bin/camera_mock build-test:/usr/bin/camera_mock
+
+      - name: Run cukinia tests inside container
+        run: docker exec build-test cukinia --junit-output /app/cukinia-results.xml
+
+      - name: Copy cukinia results back
+        run: docker cp target-env:/app/cukinia-results.xml ./cukinia-results.xml
+
+      - name: Upload cukinia results
+        uses: actions/upload-artifact@v4
+        with:
+          name: cukinia-results
+          path: cukinia-results.xm
