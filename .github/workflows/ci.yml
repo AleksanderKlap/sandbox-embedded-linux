@@ -47,7 +47,8 @@ jobs:
           sleep 10
 
       - name: Debug List all containers
-        run: docker ps
+        run: docker ps -a
+        #fixed
 
       - name: Debug Show logs of build-test container
         run: docker logs build-test || echo "No logs"
