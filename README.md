@@ -2,8 +2,8 @@
 
 ### BUGS:
 
-- scripts in the docker image have same name as program binary - thus does not trigger it as it catches itself with ps | grep and thinks is running aready (will fix next push)
-- frame_analysis does not stop when the frames in the buffer are finished?(change te buffer to FIFO queue)
+- scripts in the docker image have same name as program binary - thus does not trigger it as it catches itself with ps | grep and thinks is running aready _(FIXED)_
+- frame analysis does not stop when the frames in the buffer are finished? _('fixed' with feof for now)_
 
 ### 1. Embedded linux made with buildroot - based on config:
 
@@ -30,3 +30,7 @@ Image includes openSSH and runs sshd on init _(And copies my public ssh key for 
 Programs are run for now manualy via ssh using scripts embedded to docker image.
 
 Code is compiled with buildroot toolchain gcc from build output.
+
+### UPDATE:
+
+- push to main activate GitHub Action - the environment runs docker container from mentioned earlier image, gets the buildroot toolchain for gcc, compiles and uplodes binaries to the container, and run sample unit & cukinia tests -> providing files with results.
