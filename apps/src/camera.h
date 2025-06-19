@@ -6,7 +6,7 @@
 #include <stdio.h>
 
 void generate_frame(Frame *frame);
-static void log_frame(Frame *frame, FILE *file);
+void log_frame(Frame *frame, FILE *file);
 int main();
 
 #endif

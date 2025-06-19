@@ -5,7 +5,7 @@
 #include <fcntl.h>
 #include "camera.h"
 
-static void count_traffic(Frame *frame, int *cars, int *pedestrians)
+void count_traffic(Frame *frame, int *cars, int *pedestrians)
 {
     *cars = 0, *pedestrians = 0;
     for (int i = 0; i < FRAME_WIDTH; i++)
@@ -24,7 +24,7 @@ static void count_traffic(Frame *frame, int *cars, int *pedestrians)
     }
 }
 
-static void analyze_frame(const Frame *frame, FILE *analysis_output)
+void analyze_frame(const Frame *frame, FILE *analysis_output)
 {
     int cars = 0, pedestrians = 0;
     count_traffic(frame, &cars, &pedestrians);
@@ -33,7 +33,7 @@ static void analyze_frame(const Frame *frame, FILE *analysis_output)
     fflush(analysis_output);
 }
 
-static int frame_analysis_work()
+int frame_analysis_work()
 {
     sem_t *sem = sem_open("/camera_buffer", O_CREAT, 0644, 1);
     if (sem == SEM_FAILED)

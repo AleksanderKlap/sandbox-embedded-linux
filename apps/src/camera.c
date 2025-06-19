@@ -1,4 +1,5 @@
 #include "camera.h"
+#include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
 #include <unistd.h>
@@ -24,9 +25,9 @@ void generate_frame(Frame *frame)
     }
 }
 
-static void log_frame(Frame *frame, FILE *file)
+void log_frame(Frame *frame, FILE *file)
 {
-    fprintf(file, "Frame at timestamp: %s\n", frame->timestamp);
+    fprintf(file, "Frame at timestamp: %ld\n", frame->timestamp);
     for (int i = 0; i < FRAME_WIDTH; i++)
     {
         for (int j = 0; j < FRAME_HEIGHT; j++)

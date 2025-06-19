@@ -1,6 +1,8 @@
 #include <assert.h>
 #include <stdio.h>
 #include "camera.h"
+#include "frame.h"
+#include <assert.h>
 
 int count_values(Frame *frame, int value)
 {
