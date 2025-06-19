@@ -16,11 +16,12 @@ jobs:
         run: pip install gdown
 
       - name: Download toolchain archive from Google Drive
-        run: gdown https://drive.google.com/uc?id=1YFKVe8KBIDbx3eXMCm9P2pn3qBHjo9Pm -O toolchain/toolchain.tar.xz
+        run: |
+          mkdir -p toolchain
+          gdown https://drive.google.com/uc?id=1YFKVe8KBIDbx3eXMCm9P2pn3qBHjo9Pm -O toolchain/toolchain.tar.xz
 
       - name: Extract toolchain
         run: |
-          mkdir -p toolchain
           tar -xJf toolchain/toolchain.tar.xz -C toolchain
 
       # - name: Add toolchain to PATH
