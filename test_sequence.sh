@@ -6,7 +6,7 @@ docker exec build-test sh -c "/usr/bin/camera_mock --test > /tmp/test_camera.log
 docker exec build-test sh -c "/usr/bin/frame_analysis --test > /tmp/test_analysis.log 2>&1"
 
 echo "Run cukinia tests on target container"
-docker exec build-test cukinia -f junitxml -o cukinia-results.xml /cukinia-results.xml
+docker exec build-test cukinia -f junitxml -o cukinia-results.xml /tmp/cukinia-results.xml
 
 echo "Copy cukinia test results back"
 mkdir -p test_logs
