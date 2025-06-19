@@ -7,6 +7,5 @@
 
 void generate_frame(Frame *frame);
 void log_frame(Frame *frame, FILE *file);
-int main();
 
 #endif

@@ -13,7 +13,7 @@ make all
 cd ..
 
 echo "Copy binaries to the container"
-for bin in camera_mock frame_analysis test_camera test_analysis; do
+for bin in camera_mock frame_analysis; do
     docker cp apps/bin/$bin build-test:/usr/bin/$bin
 done
 

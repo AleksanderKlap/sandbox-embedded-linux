@@ -3,7 +3,10 @@
 #include <unistd.h>
 #include <semaphore.h>
 #include <fcntl.h>
-#include "camera.h"
+#include "config.h"
+#include "frame.h"
+#include "test_analysis.h"
+#include <string.h>
 
 void count_traffic(Frame *frame, int *cars, int *pedestrians)
 {
@@ -14,17 +17,17 @@ void count_traffic(Frame *frame, int *cars, int *pedestrians)
         {
             if (frame->data[i][j] == 1)
             {
-                cars++;
+                (*cars)++;
             }
             else if (frame->data[i][j] == 2)
             {
-                pedestrians++;
+                (*pedestrians)++;
             }
         }
     }
 }
 
-void analyze_frame(const Frame *frame, FILE *analysis_output)
+void analyze_frame(Frame *frame, FILE *analysis_output)
 {
     int cars = 0, pedestrians = 0;
     count_traffic(frame, &cars, &pedestrians);
@@ -99,9 +102,27 @@ int frame_analysis_work()
     return 0;
 }
 
-int main()
+int main(int argc, char *argv[])
 {
-    srand(time(NULL));
-    frame_analysis_work();
-    return 0;
+    if (argc != 2)
+    {
+        fprintf(stderr, "Usage: %s [ --run | --test ]\n", argv[0]);
+        return 1;
+    }
+
+    if (strcmp(argv[1], "--test") == 0)
+    {
+        run_test_analysis();
+        return 0;
+    }
+    else if (strcmp(argv[1], "--run") == 0)
+    {
+        srand(time(NULL));
+        return frame_analysis_work();
+    }
+    else
+    {
+        fprintf(stderr, "Unknown option: %s\n", argv[1]);
+        return 1;
+    }
 }

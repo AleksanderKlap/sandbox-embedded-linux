@@ -6,6 +6,7 @@
 #include <semaphore.h>
 #include <fcntl.h>
 #include "config.h"
+#include "test_camera.h"
 
 void generate_frame(Frame *frame)
 {
@@ -24,7 +25,6 @@ void generate_frame(Frame *frame)
         }
     }
 }
-
 void log_frame(Frame *frame, FILE *file)
 {
     fprintf(file, "Frame at timestamp: %ld\n", frame->timestamp);
@@ -39,7 +39,7 @@ void log_frame(Frame *frame, FILE *file)
     fflush(file);
 }
 
-void camera_work()
+int camera_work()
 {
     sem_t *sem = sem_open("/camera_buffer", O_CREAT, 0644, 1);
     if (sem == SEM_FAILED)
@@ -90,12 +90,30 @@ void camera_work()
     fclose(buffer);
     fclose(logfile);
     sem_close(sem);
-    // sem_unlink("/camera_buffer");
+    return 1;
 }
 
-int main()
+int main(int argc, char *argv[])
 {
-    srand(time(NULL));
-    camera_work();
-    return 0;
+    if (argc != 2)
+    {
+        fprintf(stderr, "Usage: %s [ --run | --test ]\n", argv[0]);
+        return 1;
+    }
+
+    if (strcmp(argv[1], "--test") == 0)
+    {
+        run_camera_test();
+        return 0;
+    }
+    else if (strcmp(argv[1], "--run") == 0)
+    {
+        srand(time(NULL));
+        return camera_work();
+    }
+    else
+    {
+        fprintf(stderr, "Unknown option: %s\n", argv[1]);
+        return 1;
+    }
 }

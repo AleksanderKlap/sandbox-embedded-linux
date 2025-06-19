@@ -1,8 +1,8 @@
-#include <assert.h>
 #include <stdio.h>
-#include "camera.h"
-#include "frame.h"
 #include <assert.h>
+#include "config.h"
+#include "frame.h"
+#include "test_camera.h"
 
 int count_values(Frame *frame, int value)
 {
@@ -40,7 +40,7 @@ int test_generate_frame()
     printf("All tests passed.\n");
 }
 
-int main()
+int run_camera_test()
 {
     test_generate_frame();
     return 0;

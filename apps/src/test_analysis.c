@@ -1,4 +1,3 @@
-#include "camera.h"
 #include "frame_analysis.h"
 #include <assert.h>
 
@@ -23,7 +22,7 @@ void test_frame_with_objects()
     assert(pedestrians == 1);
 }
 
-int main()
+int run_test_analysis()
 {
     test_empty_frame();
     test_frame_with_objects();
