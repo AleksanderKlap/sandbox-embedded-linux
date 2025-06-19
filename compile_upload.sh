@@ -18,6 +18,6 @@ for bin in camera_mock frame_analysis; do
 done
 
 echo "Copy cukinia config"
-docker cp /cukinia.conf build-test:/etc/cukinia/cukinia.conf
+docker cp cukinia.conf build-test:/etc/cukinia/cukinia.conf
 
 
