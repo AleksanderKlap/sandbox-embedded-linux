@@ -34,6 +34,11 @@ jobs:
         uses: docker/setup-qemu-action@v3
         with:
           platforms: arm/v7
+      - name: set builx
+        run: |
+          docker run --rm --privileged tonistiigi/binfmt --install all
+          docker buildx create --use
+          docker buildx inspect --bootstrap
 
       - name: Compile code
         run: |
