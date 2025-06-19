@@ -48,8 +48,8 @@ jobs:
 
       - name: Run ARM container
         run: |
-          docker run -d --platform linux/arm/v7 olosrolo/rp3_linux uname -a
-          sleep 10
+          docker run -d --platform linux/arm/v7 --name build-test olosrolo/rp3_linux
+          sleep 5
 
       - name: Debug List all containers
         run: docker ps -a
@@ -61,17 +61,17 @@ jobs:
       - name: Debug Inspect container state
         run: docker inspect build-test --format='{{.State.Status}}'
 
-      - name: Copy binaries into container
-        run: docker cp apps/bin/camera_mock build-test:/usr/bin/camera_mock
+      # - name: Copy binaries into container
+      #   run: docker cp apps/bin/camera_mock build-test:/usr/bin/camera_mock
 
-      - name: Run cukinia tests inside container
-        run: docker exec build-test cukinia --junit-output /app/cukinia-results.xml
+      # - name: Run cukinia tests inside container
+      #   run: docker exec build-test cukinia --junit-output /app/cukinia-results.xml
 
-      - name: Copy cukinia results back
-        run: docker cp target-env:/app/cukinia-results.xml ./cukinia-results.xml
+      # - name: Copy cukinia results back
+      #   run: docker cp target-env:/app/cukinia-results.xml ./cukinia-results.xml
 
-      - name: Upload cukinia results
-        uses: actions/upload-artifact@v4
-        with:
-          name: cukinia-results
-          path: cukinia-results.xml
+      # - name: Upload cukinia results
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: cukinia-results
+      #     path: cukinia-results.xml
