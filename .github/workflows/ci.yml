@@ -42,10 +42,12 @@ jobs:
           cd ..
 
       - name: Run ARM container
-        run: docker run -p 2222:22 --name build-test -d olosrolo/rp3_linux
+        run: |
+          docker run -p 2222:22 --name build-test -d olosrolo/rp3_linux
+          sleep 10
 
       - name: Debug List all containers
-        run: docker ps -a
+        run: docker ps
 
       - name: Debug Show logs of build-test container
         run: docker logs build-test || echo "No logs"
