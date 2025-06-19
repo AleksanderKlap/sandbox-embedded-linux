@@ -44,6 +44,15 @@ jobs:
       - name: Run ARM container
         run: docker run -p 2222:22 --name build-test -d olosrolo/rp3_linux tail -f /dev/null
 
+      - name: Debug List all containers
+        run: docker ps -a
+
+      - name: Debug Show logs of build-test container
+        run: docker logs build-test || echo "No logs"
+
+      - name: Debug Inspect container state
+        run: docker inspect build-test --format='{{.State.Status}}'
+
       - name: Copy binaries into container
         run: docker cp apps/bin/camera_mock build-test:/usr/bin/camera_mock
 
