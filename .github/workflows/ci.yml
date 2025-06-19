@@ -49,11 +49,10 @@ jobs:
       - name: Run ARM container
         run: |
           docker run -d --platform linux/arm/v7 --name build-test olosrolo/rp3_linux
-          sleep 5
+          sleep 10
 
       - name: Debug List all containers
         run: docker ps -a
-        #fixed
 
       - name: Debug Show logs of build-test container
         run: docker logs build-test || echo "No logs"
@@ -68,7 +67,7 @@ jobs:
         run: docker exec build-test cukinia --junit-output /app/cukinia-results.xml
 
       - name: Copy cukinia results back
-        run: docker cp target-env:/app/cukinia-results.xml ./cukinia-results.xml
+        run: docker cp build-test:/app/cukinia-results.xml ./cukinia-results.xml
 
       - name: Upload cukinia results
         uses: actions/upload-artifact@v4
