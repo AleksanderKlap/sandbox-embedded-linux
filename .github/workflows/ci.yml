@@ -43,7 +43,7 @@ jobs:
 
       - name: Run ARM container
         run: |
-          docker run -d --platform linux/arm/v7 olosrolo/rp3_linux uname -a
+          docker run --name build-test -d --platform linux/arm/v7 olosrolo/rp3_linux uname -a
           sleep 10
 
       - name: Debug List all containers
