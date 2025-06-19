@@ -42,7 +42,7 @@ jobs:
           cd ..
 
       - name: Run ARM container
-        run: docker run -p 2222:22 --name build-test -d olosrolo/rp3_linux tail -f /dev/null
+        run: docker run -p 2222:22 --name build-test -d olosrolo/rp3_linux
 
       - name: Debug List all containers
         run: docker ps -a
