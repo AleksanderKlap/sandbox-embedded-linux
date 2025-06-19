@@ -4,8 +4,9 @@
 #include <unistd.h>
 #include <semaphore.h>
 #include <fcntl.h>
+#include "config.h"
 
-static void generate_frame(Frame *frame)
+void generate_frame(Frame *frame)
 {
     frame->timestamp = time(NULL);
     for (int i = 0; i < FRAME_WIDTH; i++)
@@ -25,7 +26,7 @@ static void generate_frame(Frame *frame)
 
 static void log_frame(Frame *frame, FILE *file)
 {
-    fprintf(file, "Frame at timestamp: %ld\n", frame->timestamp);
+    fprintf(file, "Frame at timestamp: %s\n", frame->timestamp);
     for (int i = 0; i < FRAME_WIDTH; i++)
     {
         for (int j = 0; j < FRAME_HEIGHT; j++)
@@ -33,8 +34,8 @@ static void log_frame(Frame *frame, FILE *file)
             fprintf(file, "%d", frame->data[i][j]);
         }
         fprintf(file, "\n");
-        fflush(file);
     }
+    fflush(file);
 }
 
 void camera_work()
@@ -46,21 +47,19 @@ void camera_work()
         return;
     }
 
-    FILE *file = fopen("/tmp/camera_mock.log", "a");
-    if (!file)
+    FILE *logfile = fopen(CAMERA_LOG_FILE, "a");
+    if (!logfile)
     {
         perror("Failed to open file");
         sem_close(sem);
-        return 1;
     }
 
-    FILE *buffer = fopen("/tmp/camera_buffer", "wb");
+    FILE *buffer = fopen(CAMERA_BUFFER_FILE, "wb");
     if (!buffer)
     {
         perror("Failed to open camera buffer");
-        fclose(file);
+        fclose(logfile);
         sem_close(sem);
-        return 1;
     }
 
     Frame frame;
@@ -74,11 +73,11 @@ void camera_work()
         }
 
         generate_frame(&frame);
-        log_frame(&frame, file);
+        log_frame(&frame, logfile);
         if (fwrite(&frame, sizeof(Frame), 1, buffer) != 1)
         {
-            fprintf(file, "Error writing to buffer\n");
-            fflush(file);
+            fprintf(logfile, "Error writing to buffer\n");
+            fflush(logfile);
             sem_post(sem);
             break;
         }
@@ -88,9 +87,9 @@ void camera_work()
     }
 
     fclose(buffer);
-    fclose(file);
+    fclose(logfile);
     sem_close(sem);
-    sem_unlink("/camera_buffer");
+    // sem_unlink("/camera_buffer");
 }
 
 int main()

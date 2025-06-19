@@ -1,4 +1,4 @@
-#CC = ~/code/buildroot/output/host/bin/arm-linux-gcc
+# CC = ~/code/buildroot/output/host/bin/arm-linux-gcc
 # CC = ${{ github.workspace }}/toolchain/bin/arm-linux-gcc
 # CC = arm-linux-gcc
 CC = ../toolchain/host/bin/arm-linux-gcc
@@ -11,7 +11,7 @@ BIN_DIR = bin
 
 SOURCES = $(wildcard $(SRC_DIR)/*.c)
 OBJECTS = $(patsubst $(SRC_DIR)/%.c, $(BUILD_DIR)/%.o, $(SOURCES))
-EXECUTABLES = $(BIN_DIR)/camera_mock $(BIN_DIR)/frame_analysis
+EXECUTABLES = $(BIN_DIR)/camera_mock $(BIN_DIR)/frame_analysis $(BIN_DIR)/test_analysis $(BIN_DIR)/test_camera
 
 all: $(BUILD_DIR) $(BIN_DIR) $(EXECUTABLES)
 
@@ -27,11 +27,19 @@ $(BIN_DIR)/camera_mock: $(BUILD_DIR)/camera.o
 $(BIN_DIR)/frame_analysis: $(BUILD_DIR)/frame_analysis.o
 	$(CC) $< $(LDFLAGS) -o $@
 
+$(BIN_DIR)/test_camera: $(BUILD_DIR)/test_camera.o $(BUILD_DIR)/camera.o
+	$(CC) $^ $(LDFLAGS) -o $@
+
+$(BIN_DIR)/test_analysis: $(BUILD_DIR)/test_analysis.o $(BUILD_DIR)/camera.o
+	$(CC) $^ $(LDFLAGS) -o $@
+
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(BUILD_DIR)/camera.o: $(SRC_DIR)/camera.c $(SRC_DIR)/camera.h $(SRC_DIR)/frame.h $(SRC_DIR)/config.h
 $(BUILD_DIR)/frame_analysis.o: $(SRC_DIR)/frame_analysis.c $(SRC_DIR)/frame_analysis.h $(SRC_DIR)/frame.h $(SRC_DIR)/config.h
+$(BUILD_DIR)/test_analysis.o: $(SRC_DIR)/test_analysis.c $(SRC_DIR)/frame_analysis.h $(SRC_DIR)/frame.h
+$(BUILD_DIR)/test_camera.o: $(SRC_DIR)/test_camera.c $(SRC_DIR)/camera.h $(SRC_DIR)/frame.h
 
 clean:
 	rm -rf $(BUILD_DIR) $(BIN_DIR)

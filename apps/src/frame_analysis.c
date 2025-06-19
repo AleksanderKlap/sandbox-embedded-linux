@@ -5,9 +5,9 @@
 #include <fcntl.h>
 #include "camera.h"
 
-static void analyze_frame(const Frame *frame, FILE *log_file)
+static void count_traffic(Frame *frame, int *cars, int *pedestrians)
 {
-    int cars = 0, pedestrians = 0;
+    *cars = 0, *pedestrians = 0;
     for (int i = 0; i < FRAME_WIDTH; i++)
     {
         for (int j = 0; j < FRAME_HEIGHT; j++)
@@ -22,9 +22,15 @@ static void analyze_frame(const Frame *frame, FILE *log_file)
             }
         }
     }
+}
 
-    fprintf(log_file, "Timestamp: %ld, Cars: %d, Pedestrians: %d\n", frame->timestamp, cars, pedestrians);
-    fflush(log_file);
+static void analyze_frame(const Frame *frame, FILE *analysis_output)
+{
+    int cars = 0, pedestrians = 0;
+    count_traffic(frame, &cars, &pedestrians);
+
+    fprintf(analysis_output, "Timestamp: %ld, Cars: %d, Pedestrians: %d\n", frame->timestamp, cars, pedestrians);
+    fflush(analysis_output);
 }
 
 static int frame_analysis_work()
@@ -36,8 +42,8 @@ static int frame_analysis_work()
         return 1;
     }
 
-    FILE *log_file = fopen("/tmp/frame_analysis.log", "a");
-    if (!log_file)
+    FILE *analysis_output = fopen(ANALYSIS_OUTPUT_FILE, "a");
+    if (!analysis_output)
     {
         perror("Failed to open log file");
         sem_close(sem);
@@ -48,7 +54,7 @@ static int frame_analysis_work()
     if (!buffer)
     {
         perror("Failed to open camera buffer");
-        fclose(log_file);
+        fclose(analysis_output);
         sem_close(sem);
         return 1;
     }
@@ -64,20 +70,30 @@ static int frame_analysis_work()
 
         if (fread(&frame, sizeof(Frame), 1, buffer) != 1)
         {
-            fprintf(log_file, "Error reading buffer\n");
-            fflush(log_file);
-            sem_post(sem);
-            sleep(1);
-            continue;
+            if (feof(buffer))
+            {
+                fprintf(analysis_output, "End of buffer reached, analyser stopped.\n");
+                fflush(analysis_output);
+                sem_post(sem);
+                break;
+            }
+            else
+            {
+                fprintf(analysis_output, "Error reading buffer\n");
+                fflush(analysis_output);
+                sem_post(sem);
+                sleep(1);
+                continue;
+            }
         }
 
-        analyze_frame(&frame, log_file);
+        analyze_frame(&frame, analysis_output);
         sem_post(sem);
         sleep(1);
     }
 
     fclose(buffer);
-    fclose(log_file);
+    fclose(analysis_output);
     sem_close(sem);
     sem_unlink("/camera_buffer");
     return 0;
