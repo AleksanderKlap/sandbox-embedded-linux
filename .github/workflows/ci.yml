@@ -64,10 +64,10 @@ jobs:
         run: docker cp apps/bin/camera_mock build-test:/usr/bin/camera_mock
 
       - name: Run cukinia tests inside container
-        run: docker exec build-test cukinia --junit-output /app/cukinia-results.xml
+        run: docker exec build-test cukinia -f junitxml -o cukinia-results.xml /cukinia-results.xml
 
       - name: Copy cukinia results back
-        run: docker cp build-test:/app/cukinia-results.xml ./cukinia-results.xml
+        run: docker cp build-test:/cukinia-results.xml ./cukinia-results.xml
 
       - name: Upload cukinia results
         uses: actions/upload-artifact@v4
